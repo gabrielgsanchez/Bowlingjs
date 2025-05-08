@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Gioco di Bowling</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    button { padding: 10px 20px; font-size: 16px; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Gioco di Bowling</h1>
+  <button id="startButton">Gioca</button>
+
+  <h2>Punteggi finali:</h2>
+  <div id="finalScores"></div>
+
+  <h2>Vincitore:</h2>
+  <div id="winner"></div>
+
+  <script src="script.js">
+    // Definizione della classe Bowling
+    class Bowling {
+      constructor() {
+        this.players = [];
+      }
+
+      // Aggiunge un nuovo giocatore
+      addPlayer(name) {
+        this.players.push({ name, scores: [] });
+      }
+
+      // Genera 10 punteggi casuali per ogni giocatore
+      generateScores() {
+        this.players.forEach(player => {
+          player.scores = Array.from({ length: 10 }, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
+        });
+      }
+
+      // Calcola il punteggio totale per ogni giocatore e li ordina in ordine decrescente
+      getFinalScores() {
+        return this.players.map(player => ({
+          name: player.name,
+          totalScore: player.scores.reduce((acc, score) => acc + score, 0)
+        })).sort((a, b) => b.totalScore - a.totalScore);
+      }
+
+      // Determina il vincitore (il giocatore con il punteggio più alto)
+      getWinner() {
+        const sortedScores = this.getFinalScores();
+        return sortedScores.length > 0 ? sortedScores[0] : null;
+      }
+    }
+
+    // Gestore dell'evento per il pulsante "Gioca"
+    document.getElementById('startButton').addEventListener('click', () => {
+      const game = new Bowling();
+      // Aggiungiamo alcuni giocatori
+      game.addPlayer("Marco");
+      game.addPlayer("Luca");
+      game.addPlayer("Giulia");
+
+      // Generiamo i punteggi casuali
+      game.generateScores();
+
+      // Recuperiamo e mostriamo i punteggi finali
+      const finalScores = game.getFinalScores();
+      let scoresHtml = "<ul>";
+      finalScores.forEach(player => {
+        scoresHtml += `<li>${player.name}: ${player.totalScore}</li>`;
+      });
+      scoresHtml += "</ul>";
+      document.getElementById("finalScores").innerHTML = scoresHtml;
+
+      // Determiniamo e mostriamo il vincitore
+      const winner = game.getWinner();
+      document.getElementById("winner").innerHTML = winner ? `${winner.name} con ${winner.totalScore} punti` : "Nessun vincitore";
+    });
+  </script>
+</body>
+</html>
